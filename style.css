@@ -2,6 +2,7 @@
     max-width: 600px;
     margin: auto;
     text-align: center;
+    z-index: 1;
 }
 
 #meals {

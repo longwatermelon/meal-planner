@@ -57,7 +57,7 @@ const meals = [
         "name": "chicken",
         "description": "delicious chicken",
         "img": "chicken.jpeg",
-        "stats": [0, .4, 0, .2, .1, 0, 0]
+        "stats": [0, .4, 0, .2, .5, 0, 0]
     },
     {
         "name": "sugar",
@@ -70,10 +70,55 @@ const meals = [
         "description": "salty delight",
         "img": "salt.png",
         "stats": [0, 1, 0, 0, .5, 0, 0]
+    },
+    {
+        "name": "honey mustard",
+        "description": "delightful treat",
+        "img": "honey-mustard.jpeg",
+        "stats": [.4, .6, .3, .1, .2, 0, 0]
+    },
+    {
+        "name": "honey",
+        "description": "scrumptious delight",
+        "img": "honey.jpg",
+        "stats": [1, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "name": "hot cheetos",
+        "description": "delicious spicy snack",
+        "img": "hot-cheetos.png",
+        "stats": [0, .8, 0, 0, .6, 0, 1]
+    },
+    {
+        "name": "watermelon",
+        "description": "enjoyable fruit",
+        "img": "watermelon.jpeg",
+        "stats": [.5, 0, 0, 0, 0, 0, 0]
     }
 ];
 
 addMeal();
+addMeal();
+addMeal();
+
+function getUser() {
+    const s = localStorage.getItem('user');
+    const user_s = JSON.parse(s);
+    const user = new User(user_s.vw.length);
+    user.vw = user_s.vw;
+    user.b = user_s.b;
+    user.mlikes = user_s.mlikes;
+    user.mdislikes = user_s.mdislikes;
+    return user;
+}
+
+function updateDisplayPref() {
+    const user = getUser();
+    const prefs = document.getElementById('pref');
+    for (let i = 0; i < user.vw.length; ++i)
+        user.vw[i] = user.vw[i].toFixed(2);
+    prefs.innerText = "Sweet " + user.vw[0] + "\nSalty " + user.vw[1] + "\nSour " + user.vw[2] + "\nBitter " + user.vw[3] + "\nSavory " + user.vw[4] + "\nFatty " + user.vw[5] + "\nSpicy " + user.vw[6];
+}
 
 function userAddPref(evt) {
     const name = evt.currentTarget.name;
@@ -97,8 +142,10 @@ function userAddPref(evt) {
     console.log('here');
     removeMeal(name);
     addMeal();
-    const elem = document.getElementById('predict');
-    elem.querySelector("#predict-rating").innerHTML = Math.max(0, Math.min(5, (user.rate([.7,0,0,0,0,.5,0]) * 5).toFixed(1))) + " stars";
+
+    updateDisplayPref();
+    // const elem = document.getElementById('predict');
+    // elem.querySelector("#predict-rating").innerHTML = Math.max(0, Math.min(5, (user.rate([.7,0,0,0,0,.5,0]) * 5).toFixed(1))) + " stars";
 }
 
 function removeMeal(name) {
@@ -121,7 +168,20 @@ function addMeal() {
     const mealsContainer = document.getElementById('meals');
     const meal = document.createElement('div');
 
-    const mealObject = meals[Math.floor(Math.random() * meals.length)];
+    let highest_rating = 0;
+    let mealObject = meals[0];
+    const user = getUser();
+    for (let i = 0; i < meals.length; ++i)
+    {
+        const rating = user.rate(meals[i].stats);
+        if (rating > highest_rating)
+        {
+            highest_rating = rating;
+            mealObject = meals[i];
+        }
+    }
+
+    // const mealObject = meals[Math.floor(Math.random() * meals.length)];
     meal.name = mealObject["name"];
 
     meals.splice(meals.indexOf(mealObject), 1);
