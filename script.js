@@ -73,7 +73,10 @@ const meals = [
     }
 ];
 
-function userAddPref(evt) {//vx, liked) {
+addMeal();
+
+function userAddPref(evt) {
+    const name = evt.currentTarget.name;
     const vx = evt.currentTarget.vx;
     const liked = evt.currentTarget.liked;
 
@@ -91,6 +94,61 @@ function userAddPref(evt) {//vx, liked) {
 
     localStorage.setItem('user', JSON.stringify(user));
 
+    console.log('here');
+    removeMeal(name);
+    addMeal();
     const elem = document.getElementById('predict');
     elem.querySelector("#predict-rating").innerHTML = Math.max(0, Math.min(5, (user.rate([.7,0,0,0,0,.5,0]) * 5).toFixed(1))) + " stars";
+}
+
+function removeMeal(name) {
+    const mealsContainer = document.getElementById('meals');
+    let subdivs = mealsContainer.getElementsByTagName('div');
+    for (let i = 0; i < subdivs.length; ++i)
+    {
+        if (subdivs[i].name == name)
+        {
+            subdivs[i].remove();
+            break;
+        }
+    }
+}
+
+function addMeal() {
+    if (meals.length == 0)
+        return;
+
+    const mealsContainer = document.getElementById('meals');
+    const meal = document.createElement('div');
+
+    const mealObject = meals[Math.floor(Math.random() * meals.length)];
+    meal.name = mealObject["name"];
+
+    meals.splice(meals.indexOf(mealObject), 1);
+
+    const image = document.createElement('img');
+    image.src = mealObject["img"];
+    meal.appendChild(image);
+
+    const text = document.createElement('p');
+    text.innerHTML = "<b>" + mealObject["name"] + "</b><br>" + mealObject["description"];
+    meal.appendChild(text);
+
+    const like = document.createElement('button');
+    like.innerText = "Like";
+    like.addEventListener("click", userAddPref, false);
+    like.name = mealObject["name"];
+    like.vx = mealObject["stats"];
+    like.liked = true;
+    meal.appendChild(like);
+
+    const dislike = document.createElement('button');
+    dislike.innerText = "Dislike";
+    dislike.addEventListener("click", userAddPref, false);
+    dislike.name = mealObject["name"];
+    dislike.vx = mealObject["stats"];
+    dislike.liked = false;
+    meal.appendChild(dislike);
+
+    mealsContainer.appendChild(meal);
 }
