@@ -52,7 +52,7 @@ class User
 localStorage.setItem('user', JSON.stringify(new User(7)));
 
 // stats: sweet, salty, sour, bitter, savory, fatty, spicy
-const meals = [
+let meals = [
     {
         "name": "chicken",
         "description": "delicious chicken",
@@ -97,9 +97,14 @@ const meals = [
     }
 ];
 
-addMeal();
-addMeal();
-addMeal();
+{
+    const mealsPrev = meals.map((x) => x);
+    const len = meals.length;
+    for (let i = 0; i < len; ++i)
+        meals.splice(meals.indexOf(addMeal()), 1);
+    meals = mealsPrev.map((x) => x);
+}
+
 
 function getUser() {
     const s = localStorage.getItem('user');
@@ -139,9 +144,15 @@ function userAddPref(evt) {
 
     localStorage.setItem('user', JSON.stringify(user));
 
-    console.log('here');
     removeMeal(name);
-    addMeal();
+
+    document.getElementById('meals').innerHTML = '';
+    const mealsPrev = meals.map((x) => x);
+    const len = meals.length;
+    console.log(len);
+    for (let i = 0; i < len; ++i)
+        meals.splice(meals.indexOf(addMeal()), 1);
+    meals = mealsPrev.map((x) => x);
 
     updateDisplayPref();
     // const elem = document.getElementById('predict');
@@ -155,7 +166,7 @@ function removeMeal(name) {
     {
         if (subdivs[i].name == name)
         {
-            subdivs[i].remove();
+            meals.splice(meals.indexOf(subdivs[i].mealObject), 1);
             break;
         }
     }
@@ -168,7 +179,7 @@ function addMeal() {
     const mealsContainer = document.getElementById('meals');
     const meal = document.createElement('div');
 
-    let highest_rating = 0;
+    let highest_rating = -1000;
     let mealObject = meals[0];
     const user = getUser();
     for (let i = 0; i < meals.length; ++i)
@@ -181,10 +192,13 @@ function addMeal() {
         }
     }
 
+    console.log(mealObject["name"]);
+
     // const mealObject = meals[Math.floor(Math.random() * meals.length)];
+    meal.mealObject = mealObject;
     meal.name = mealObject["name"];
 
-    meals.splice(meals.indexOf(mealObject), 1);
+    // meals.splice(meals.indexOf(mealObject), 1);
 
     const image = document.createElement('img');
     image.src = mealObject["img"];
@@ -211,4 +225,6 @@ function addMeal() {
     meal.appendChild(dislike);
 
     mealsContainer.appendChild(meal);
+
+    return mealObject;
 }
