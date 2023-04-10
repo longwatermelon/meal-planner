@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="container">
+            <button type="add-quoge" onclick="clickHandler()">Add random meal</button>
+            <script>
+                function clickHandler() {
+                    const mealsContainer = document.getElementById('meals');
+                    const meal = document.createElement('div');
+
+                    const mealObject = meals[Math.floor(Math.random() * meals.length)];
+
+                    const image = document.createElement('img');
+                    image.src = mealObject["img"];
+                    meal.appendChild(image);
+
+                    const text = document.createElement('p');
+                    text.innerHTML = "<b>" + mealObject["name"] + "</b><br>" + mealObject["description"];
+                    meal.appendChild(text);
+
+                    const like = document.createElement('button');
+                    like.innerText = "Like";
+                    like.addEventListener("click", userAddPref, false);
+                    like.vx = mealObject["stats"];
+                    like.liked = true;
+                    meal.appendChild(like);
+
+                    const dislike = document.createElement('button');
+                    dislike.innerText = "Dislike";
+                    dislike.addEventListener("click", userAddPref, false);
+                    dislike.vx = mealObject["stats"];
+                    dislike.liked = false;
+                    meal.appendChild(dislike);
+
+                    mealsContainer.appendChild(meal);
+                }
+            </script>
+            <div id="meals"></div>
+            <div id="predict">
+                <h1>Your predicted enjoyment of this meal:</h1>
+                <img src="icecream.jpg" width="100px" height="100px"><br>
+                <b>ice cream</b>
+                <br>
+                <div id="predict-rating">0 stars</div>
+            </div>
+        </div>
+    </body>
+    <script src="script.js"></script>
+</html>
